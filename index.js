@@ -76,10 +76,10 @@ module.exports.injectDataChunk_1 = async () => {
     const chunk = chunks[0]
     // injest data
     console.log(`Ingesting data: ${chunk.length} groups`);
-    const body = chunk.map(doc => [
+    const body = [
         {index: {_index: indexName}},
-        doc,
-    ]);
+        chunk,
+    ];
     client.bulk({refresh: true, body}, logBody);
 };
 
@@ -106,7 +106,8 @@ module.exports.getMapping = async () => {
         if (error) {
             console.error(error);
         } else {
-            console.log(result.body.recipes.mappings.properties);
+            // console.log(result.body);
+            console.log(result.body[indexName].mappings.properties);
         }
     });
 };
