@@ -2,3 +2,6 @@
 package-lock.json
 node_modules
 full_format_recipes.json
+.idea
+.serverless
+*.json

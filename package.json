@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "search.js",
+  "scripts": {
+    "deploy:edgar": "npx serverless deploy --stage=edgar"
+  },
   "devDependencies": {
-    "prettier": "2.4.1"
+    "prettier": "2.8.0"
   },
   "dependencies": {
-    "@opensearch-project/opensearch": "^2.0.0",
-    "dotenv": "^10.0.0"
+    "@aws-sdk/credential-provider-node": "3.223.0",
+    "@opensearch-project/opensearch": "^2.1.0",
+    "aws4": "1.11.0",
+    "dotenv": "^16.0.3",
+    "lodash.chunk": "4.2.0"
   }
 }
