@@ -4,6 +4,7 @@ const { Client, Connection } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const aws4 = require("aws4");
 
+
 module.exports.indexName = process.env.DATA_FILE.replace('.json', '');
 
 // kunde.140.json taken from
@@ -25,7 +26,7 @@ const createAwsConnector = (credentials, region) => {
             const request = super.buildRequestObject(params);
             request.service = 'es';
             request.region = region;
-            request.headers = request.headers || { Authorization: "Basic adminUser 9677dd8e-e784-c1b6-3748-a2425f3d5ceb@Q"};
+            request.headers = request.headers || { };
             request.headers['host'] = request.hostname;
 
             return aws4.sign(request, credentials);

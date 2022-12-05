@@ -33,7 +33,7 @@ module.exports.injectData = async () => {
     const client = await getClient()
     console.log(`Ingesting data: ${groups.length} groups`);
     const body = groups.flatMap(doc => [
-        {index: {_index: indexName, _id: doc.id.value}},
+        {index: {_index: indexName, _id: doc.id && doc.id.value}},
         doc,
     ]);
 
@@ -54,32 +54,33 @@ module.exports.injectDataChunks = async () => {
     console.log('inserting', chunks.length , 'chunks')
     for (const chunk of chunks) {
         const body = chunk.flatMap(doc => [
-            {index: {_index: indexName, _id: doc.id.value}},
+            {index: {_index: indexName, _id: doc.id && doc.id.value}},
             doc,
         ]);
         const res = await client.bulk({ body});
         const {errors, took, items} = res.body
-        console.log(JSON.stringify({i:++i, errors, took, items:items.length, items:items.slice(0, 2)}))
+        console.log(JSON.stringify({i:++i, errors, took, items:items.length}))
     }
 };
 /**
- * run-func index.js injectDataChunk_1
+ * run-func index.js injectDataChunkId 0
  */
-module.exports.injectDataChunk_1 = async () => {
+module.exports.injectDataChunkId = async (index) => {
     // const groups = Object.values(data.groups)
     const groups = data.flatMap(a=>a)
     const chunks = getChunks(groups)
     const client = await getClient()
-    const chunk = chunks[0]
+    const chunk = chunks[parseInt(index)]
     // injest data
-    console.log(`Ingesting data: ${chunk.length} groups`);
+    console.log(`Ingesting chunk: ${index}`);
     const body = chunk.flatMap(doc => [
-        {index: {_index: indexName}},
+        {index: {_index: indexName, _id: doc.id && doc.id.value}},
         doc,
     ]);
     console.log('starting bulk')
     const res = await client.bulk({refresh: true, body});
-    console.log('done bulk', res.body)
+    const {errors, took, items} = res.body
+    console.log(JSON.stringify({i:index, errors, took, items:items.length}))
 };
 
 /**

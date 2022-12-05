@@ -68,6 +68,7 @@ module.exports.histogram = async (field, interval) => {
 /**
  * Date histogram with interval
  * run-func aggregate.js dateHistogram periodDate year
+ * run-func aggregate.js dateHistogram periodDate month
  */
 module.exports.dateHistogram = async (field, interval) => {
   const client = await getClient()

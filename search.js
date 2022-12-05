@@ -105,7 +105,8 @@ module.exports.term = async (field, value) => {
  * gte (greater than or equal to)
  * lt (less than)
  * lte (less than or equal to)
- * run-func search.js .js range amount 0 100
+ * run-func search.js range amount 0 100
+ * run-func search.js range amount 0 100
  */
 module.exports.range = async (field, gte, lte) => {
   const client = await getClient()
