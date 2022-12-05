@@ -17,7 +17,7 @@ module.exports.logTitles = (error, result) => {
         console.error(error);
     } else {
         const hits = result.body.hits.hits;
-        console.log(hits.map((hit) => hit._source.title));
+        console.log(hits.map((hit) => [hit._source.id.value,hit._source.amount + ' ' +hit._source.currency.id ].join(' | ')));
     }
 };
 

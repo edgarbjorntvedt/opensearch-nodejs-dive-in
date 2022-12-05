@@ -1,12 +1,18 @@
-const { client, indexName: index } = require("./config");
+const { client, getClient, indexName: index } = require("./config");
 const { logAggs } = require("./helpers");
 
 /**
  * Get metric aggregations for the field
  * Examples: stats, extended_stats, percentiles, terms
- * run-func aggregate metric avg rating
+ * run-func aggregate.js metric avg amount
+ * run-func aggregate.js metric stats amount
+ * run-func aggregate.js metric stats account.no
+ * run-func aggregate.js metric stats invoiceDueDate
+ * run-func aggregate.js metric extended_stats amount
+ * run-func aggregate.js metric percentiles amount
  */
-module.exports.metric = (metric, field) => {
+module.exports.metric = async (metric, field) => {
+  const client = await getClient()
   const body = {
     aggs: {
       [`aggs-for-${field}`]: { //aggs name
@@ -34,9 +40,11 @@ module.exports.metric = (metric, field) => {
 
 /**
  * Histogram with interval
- * run-func aggregate histogram rating 1
+ * run-func aggregate.js histogram amount 100
+ * run-func aggregate.js histogram voucher.no 1000
  */
-module.exports.histogram = (field, interval) => {
+module.exports.histogram = async (field, interval) => {
+  const client = await getClient()
   const body = {
     aggs: {
       [`aggs-for-${field}`]: {
@@ -59,9 +67,10 @@ module.exports.histogram = (field, interval) => {
 
 /**
  * Date histogram with interval
- * run-func aggregate dateHistogram date year
+ * run-func aggregate.js dateHistogram periodDate year
  */
-module.exports.dateHistogram = (field, interval) => {
+module.exports.dateHistogram = async (field, interval) => {
+  const client = await getClient()
   const body = {
     aggs: {
       [`aggs-for-${field}`]: {
@@ -84,9 +93,10 @@ module.exports.dateHistogram = (field, interval) => {
 
 /**
  * Date histogram with number of buckets
- * run-func aggregate autoDateHistogram date 3
+ * run-func aggregate.js autoDateHistogram periodDate 3
  */
-module.exports.autoDateHistogram = (field, buckets) => {
+module.exports.autoDateHistogram = async (field, buckets) => {
+  const client = await getClient()
   const body = {
     aggs: {
       [`aggs-for-${field}`]: {
@@ -110,9 +120,10 @@ module.exports.autoDateHistogram = (field, buckets) => {
 
 /**
  * Calculating the moving average of number of added recipes across years
- * run-func aggregate movingAverage
+ * run-func aggregate.js movingAverage
  */
-module.exports.movingAverage = () => {
+module.exports.movingAverage = async () => {
+  const client = await getClient()
   const body = {
     aggs: {
       recipes_per_year: { // 1. date histogram

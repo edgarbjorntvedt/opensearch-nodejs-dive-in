@@ -3,7 +3,7 @@ const {logBody} = require("./helpers");
 var chunk = require('lodash.chunk');
 
 function getChunks(groups) {
-    return chunk(groups, 500)
+    return chunk(groups, 200)
 }
 
 /**
@@ -12,7 +12,7 @@ function getChunks(groups) {
  * run-func index.js viewData
  */
 module.exports.viewData = () => {
-    const groups = Object.values(data.groups)
+    const groups = data.flatMap(a=>a)
     const chunks = getChunks(groups)
     console.log('First group: ', JSON.stringify(groups[0], null, 4));
     console.log(`All data: ${groups.length} groups`);
@@ -20,31 +20,24 @@ module.exports.viewData = () => {
     console.log("first chunk is", JSON.stringify(chunks[0]).length, `bytes long`);
     console.log(`${chunks[0].length} chunk length`);
     console.log(`indexName: ${indexName}`);
-};
-/**
- * Testing async function
- * Format: action \n document \n action \n document ...
- * run-func index.js runAsync
- */
-module.exports.runAsync = async () => {
-    console.log('runAsync start');
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('runAsync finished');
+    console.log(`no id.value: ${groups.filter(g => !g.id.value).length} id.value: ${groups.filter(g => g.id.value).length}`);
 };
 /**
  * Indexing data from json file with recipes.
  * Format: action \n document \n action \n document ...
  * run-func index.js injectData
  */
-module.exports.injectData = () => {
-    const groups = Object.values(data.groups)
+module.exports.injectData = async () => {
+    // const groups = Object.values(data.groups)
+    const groups = data.flatMap(a=>a)
+    const client = await getClient()
     console.log(`Ingesting data: ${groups.length} groups`);
-    const body = groups.map(doc => [
-        {index: {_index: indexName}},
+    const body = groups.flatMap(doc => [
+        {index: {_index: indexName, _id: doc.id.value}},
         doc,
     ]);
 
-    client.bulk({refresh: true, body}, logBody);
+    client.bulk({body}, logBody);
 };
 
 /**
@@ -53,34 +46,40 @@ module.exports.injectData = () => {
  * run-func index.js injectDataChunks
  */
 module.exports.injectDataChunks = async () => {
-    const groups = Object.values(data.groups)
+    // const groups = Object.values(data.groups)
+    const groups = data.flatMap(a=>a)
     const chunks = getChunks(groups)
     const client = await getClient()
-    // injest data in chunks
-    chunks.forEach((chunk, index) => {
-        console.log(`Ingesting data: ${chunk.length} groups`);
-        const body = chunk.map(doc => [
-            {index: {_index: indexName}},
+    let i=0
+    console.log('inserting', chunks.length , 'chunks')
+    for (const chunk of chunks) {
+        const body = chunk.flatMap(doc => [
+            {index: {_index: indexName, _id: doc.id.value}},
             doc,
         ]);
-        client.bulk({refresh: true, body}, logBody);
-    })
+        const res = await client.bulk({ body});
+        const {errors, took, items} = res.body
+        console.log(JSON.stringify({i:++i, errors, took, items:items.length, items:items.slice(0, 2)}))
+    }
 };
 /**
  * run-func index.js injectDataChunk_1
  */
 module.exports.injectDataChunk_1 = async () => {
-    const groups = Object.values(data.groups)
+    // const groups = Object.values(data.groups)
+    const groups = data.flatMap(a=>a)
     const chunks = getChunks(groups)
     const client = await getClient()
     const chunk = chunks[0]
     // injest data
     console.log(`Ingesting data: ${chunk.length} groups`);
-    const body = [
+    const body = chunk.flatMap(doc => [
         {index: {_index: indexName}},
-        chunk,
-    ];
-    client.bulk({refresh: true, body}, logBody);
+        doc,
+    ]);
+    console.log('starting bulk')
+    const res = await client.bulk({refresh: true, body});
+    console.log('done bulk', res.body)
 };
 
 /**
@@ -116,7 +115,8 @@ module.exports.getMapping = async () => {
  * Deleting the index
  * run-func index.js delete
  */
-module.exports.delete = (index) => {
+module.exports.delete = async (index) => {
+    const client = await getClient()
     client.indices.delete(
         {
             index: index || indexName,

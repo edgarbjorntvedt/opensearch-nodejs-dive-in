@@ -1,12 +1,13 @@
-const { client, indexName: index } = require("./config");
+const { getClient, indexName: index } = require("./config");
 const { logTitles } = require("./helpers");
 
 /**
  * Finding matches sorted by relevance (full-text query)
- * run-func search match title "soups with beer and garlic"
- * run-func search match title "pizza salad and cheese"
+ * run-func search.js  match title "soups with beer and garlic"
+ * run-func search.js  match title "pizza salad and cheese"
  */
-module.exports.match = (field, query) => {
+module.exports.match = async (field, query) => {
+  const client = await getClient()
   const body = {
     query: {
       match: {
@@ -27,10 +28,12 @@ module.exports.match = (field, query) => {
 
 /**
  * Matching a phrase (full-text query)
- * run-func search phrase title 'pasta with cheese'
- * run-func search phrase title 'milk chocolate cake'
+ * run-func search.js  phrase text 'usd'
+ * run-func search.js  phrase title 'milk chocolate cake'
+ * run-func search.js  phrase invoiceOcr '3'
  */
-module.exports.phrase = (field, query, slop) => {
+module.exports.phrase = async (field, query, slop) => {
+  const client = await getClient()
   const body = {
     query: {
       match_phrase: {
@@ -52,10 +55,11 @@ module.exports.phrase = (field, query, slop) => {
 
 /**
  * Using special operators within a query string and a size parameter (full-text query)
- * run-func search queryString title '+(dessert | cake) -garlic  (mango | caramel | cinnamon)'
- * run-func search queryString title '+(salad | soup) -broccoli  (tomato | apple)'
+ * run-func search.js  queryString title '+(dessert | cake) -garlic  (mango | caramel | cinnamon)'
+ * run-func search.js  queryString title '+(salad | soup) -broccoli  (tomato | apple)'
  */
-module.exports.queryString = (field, query) => {
+module.exports.queryString = async (field, query) => {
+  const client = await getClient()
   const body = {
     query: {
       query_string: {
@@ -75,9 +79,10 @@ module.exports.queryString = (field, query) => {
 
 /**
  * Searching for exact matches of a value in a field (term-level query)
- * run-func search term sodium 0
+ * run-func search.js  term sodium 0
  */
-module.exports.term = (field, value) => {
+module.exports.term = async (field, value) => {
+  const client = await getClient()
   const body = {
     query: {
       term: {
@@ -100,9 +105,10 @@ module.exports.term = (field, value) => {
  * gte (greater than or equal to)
  * lt (less than)
  * lte (less than or equal to)
- * run-func search range sodium 0 100
+ * run-func search.js .js range amount 0 100
  */
-module.exports.range = (field, gte, lte) => {
+module.exports.range = async (field, gte, lte) => {
+  const client = await getClient()
   const body = {
     query: {
       range: {
@@ -125,9 +131,10 @@ module.exports.range = (field, gte, lte) => {
 
 /**
  * Combining several queries together (boolean query)
- * run-func search boolean
+ * run-func search.js  boolean
  */
-module.exports.boolean = () => {
+module.exports.boolean = async () => {
+  const client = await getClient()
   const body = {
     query: {
       bool: {

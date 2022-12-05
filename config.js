@@ -15,10 +15,9 @@ module.exports.data = require("./"+process.env.DATA_FILE);
  * Additionally, when creating a client you can also specify `ssl configuration`,
  * `bearer token`, `CA fingerprint` and other authentication details depending on protocols you use.
  */
-module.exports.client = new Client({
+module.exports.client_1 = new Client({
     node: process.env.SERVICE_URI,
 });
-
 
 const createAwsConnector = (credentials, region) => {
     class AmazonConnection extends Connection {
@@ -37,7 +36,7 @@ const createAwsConnector = (credentials, region) => {
     };
 };
 
-module.exports.getClient = async () => {
+let _getClient = async () => {
     const credentials = await defaultProvider()();
     return new Client({
         ...createAwsConnector(credentials, process.env.AWS_REGION),
@@ -49,4 +48,7 @@ module.exports.getClient = async () => {
         //node: host,
     });
 }
+module.exports.getClient = _getClient
+
+
 // console.log(process.env.SERVICE_URI)
