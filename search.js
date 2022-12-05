@@ -80,6 +80,7 @@ module.exports.queryString = async (field, query) => {
 /**
  * Searching for exact matches of a value in a field (term-level query)
  * run-func search.js  term sodium 0
+ * run-func search.js  term amount 0
  */
 module.exports.term = async (field, value) => {
   const client = await getClient()
