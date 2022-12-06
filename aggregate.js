@@ -6,6 +6,7 @@ const { logAggs } = require("./helpers");
  * Examples: stats, extended_stats, percentiles, terms
  * run-func aggregate.js metric avg amount
  * run-func aggregate.js metric stats amount
+ * run-func aggregate.js metric terms link.id
  * run-func aggregate.js metric stats account.no
  * run-func aggregate.js metric stats invoiceDueDate
  * run-func aggregate.js metric extended_stats amount

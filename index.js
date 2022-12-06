@@ -95,6 +95,15 @@ module.exports.getIndices = async () => {
 };
 
 /**
+ * print key
+ * run-func index.js aws
+ */
+module.exports.awskey = async () => {
+    console.log(`AWS_ACCESS_KEY_ID: ${process.env.AWS_ACCESS_KEY_ID}`);
+    const client = await getClient()
+};
+
+/**
  * Retrieving mapping for the index.
  * run-func index.js getMapping
  */
